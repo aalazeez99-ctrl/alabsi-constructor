@@ -3,9 +3,14 @@
  * First-paint preloader.
  *
  * Two stacked copies of the logo: a dim base and a full-opacity copy
- * clipped from the bottom, rising as the site loads — the mark builds
- * itself. A thin bar and a percentage sit under it. The fill is paced
- * over PACE_MS but never runs ahead of what has actually loaded.
+ * clipped from the bottom, rising as the bar fills — the mark builds
+ * itself. A thin bar and a percentage sit under it.
+ *
+ * The run is a fixed DURATION_MS and is NOT a readout of load state.
+ * This is a brand moment, not instrumentation: the number on screen is
+ * decoration, so it is paced for how it looks rather than tied to
+ * bytes. The site underneath is static and pre-rendered, so there is
+ * nothing the visitor gains from watching a real figure.
  *
  * Deliberately NOT in site.js. That bundle is deferred, so it only runs
  * once the document has parsed — which is exactly the window this screen
@@ -44,7 +49,8 @@ const { t } = Astro.props;
 
     /* Shown once per browsing session. Each project page is its own
        document, so without this the overlay would replay on every
-       internal link. Set to false to show it on every page load. */
+       internal link. Set to false to show it on every page load —
+       also the quickest way to see it repeatedly while testing. */
     var SESSION_ONCE = true;
     var KEY = 'alabsi:loaded';
 
@@ -59,53 +65,19 @@ const { t } = Astro.props;
 
     root.classList.add('is-loading');
 
-    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var PACE_MS = 3000;   // the bar is paced across this, see the frame loop
-    var MAX_MS = 6000;    // hard ceiling: the site always opens
-    var startedAt = performance.now();
+    /* The whole timing model. Change this one number to retime it. */
+    var DURATION_MS = 3000;
 
-    var target = 8;
-    var shown = 0;
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var startedAt = performance.now();
     var done = false;
     var pct = document.getElementById('plPct');
-
-    function bump(v) {
-      if (v > target) target = Math.min(v, 100);
-    }
 
     /* One custom property drives both the logo clip and the bar. */
     function paint(v) {
       el.style.setProperty('--p', v + '%');
       if (pct) pct.textContent = v + '%';
     }
-
-    /* Progress is measured, not faked: parse, then webfonts, then the
-       real share of <img> elements that have settled, then window load. */
-    document.addEventListener('DOMContentLoaded', function () {
-      bump(40);
-
-      var imgs = [].slice.call(document.images);
-      if (!imgs.length) return bump(88);
-
-      var settled = 0;
-      var step = function () {
-        settled++;
-        bump(40 + (settled / imgs.length) * 48);
-      };
-
-      imgs.forEach(function (img) {
-        if (img.complete) return step();
-        img.addEventListener('load', step, { once: true });
-        img.addEventListener('error', step, { once: true });
-      });
-    });
-
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () { bump(55); });
-    }
-
-    window.addEventListener('load', function () { target = 100; });
-    var failsafe = setTimeout(function () { target = 100; }, MAX_MS);
 
     function finish() {
       if (done) return;
@@ -131,26 +103,20 @@ const { t } = Astro.props;
       setTimeout(clear, 900);
     }
 
-    /* The bar shows whichever is LOWER: measured progress, or a linear
-       fill across PACE_MS. On a warm cache everything is loaded within
-       a few hundred ms, so without the pace the bar would jump to 100%
-       and then sit there for the rest of the hold, which reads as a
-       hang. Real signals can still hold it back — never push it on
-       faster — so a genuinely slow load is reported honestly.
-       Easing toward that value keeps it from stepping or reversing. */
+    /* requestAnimationFrame is suspended while a tab is in the
+       background, which would park the run half-finished. This
+       guarantees the cover always lifts. */
+    var failsafe = setTimeout(finish, DURATION_MS + 2000);
+
     (function frame() {
       if (done) return;
 
-      var elapsed = performance.now() - startedAt;
-      var paced = Math.min(target, (elapsed / PACE_MS) * 100);
+      var t = Math.min((performance.now() - startedAt) / DURATION_MS, 1);
+      /* smoothstep: eases in and out just enough that the fill does not
+         read as a machine-perfect ramp, while never seeming to stall. */
+      paint(Math.round(t * t * (3 - 2 * t) * 100));
 
-      shown += Math.max((paced - shown) * 0.16, shown < paced ? 0.4 : 0);
-      if (shown > paced) shown = paced;
-      paint(Math.round(shown));
-
-      if (target >= 100 && shown >= 99.5 && elapsed >= PACE_MS) {
-        return finish();
-      }
+      if (t >= 1) return finish();
       requestAnimationFrame(frame);
     })();
   })();
