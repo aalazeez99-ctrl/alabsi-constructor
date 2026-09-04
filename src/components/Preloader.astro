@@ -1,0 +1,148 @@
+---
+/**
+ * First-paint preloader.
+ *
+ * Two stacked copies of the logo: a dim base and a full-opacity copy
+ * clipped from the bottom, rising with real load progress — the mark
+ * builds itself while the site loads. A thin bar and a percentage sit
+ * under it.
+ *
+ * Deliberately NOT in site.js. That bundle is deferred, so it only runs
+ * once the document has parsed — which is exactly the window this screen
+ * has to cover. The script below is inline and runs the moment the
+ * parser reaches it, before the rest of the page is read.
+ *
+ * The overlay is display:none in CSS and only becomes visible once this
+ * script adds .is-loading to <html>. With JavaScript off it therefore
+ * never appears, so nobody is ever left staring at a cover that cannot
+ * lift itself.
+ */
+const { t } = Astro.props;
+---
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="pl-inner">
+    <div class="pl-mark">
+      <img class="pl-mark-base" src="/logo.png" alt="" width="656" height="641" fetchpriority="high" />
+      <img class="pl-mark-fill" src="/logo.png" alt="" width="656" height="641" fetchpriority="high" />
+    </div>
+
+    <p class="pl-brand">
+      <strong>{t.brand.name}</strong>
+      <small>{t.brand.tagline}</small>
+    </p>
+
+    <div class="pl-track"><span class="pl-fill"></span></div>
+    <p class="pl-pct" id="plPct" dir="ltr">0%</p>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    var el = document.getElementById('preloader');
+    if (!el) return;
+
+    /* Shown once per browsing session. Each project page is its own
+       document, so without this the overlay would replay on every
+       internal link. Set to false to show it on every page load. */
+    var SESSION_ONCE = true;
+    var KEY = 'alabsi:loaded';
+
+    try {
+      if (SESSION_ONCE && sessionStorage.getItem(KEY) === '1') {
+        el.remove();
+        return;
+      }
+    } catch (e) {
+      /* private mode can throw on access — fall through and just show it */
+    }
+
+    root.classList.add('is-loading');
+
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var MIN_MS = reduce ? 150 : 500;   // a 40ms flash of a loader looks broken
+    var MAX_MS = 5000;                 // hard ceiling: the site always opens
+    var startedAt = performance.now();
+
+    var target = 8;
+    var shown = 0;
+    var done = false;
+    var pct = document.getElementById('plPct');
+
+    function bump(v) {
+      if (v > target) target = Math.min(v, 100);
+    }
+
+    /* One custom property drives both the logo clip and the bar. */
+    function paint(v) {
+      el.style.setProperty('--p', v + '%');
+      if (pct) pct.textContent = v + '%';
+    }
+
+    /* Progress is measured, not faked: parse, then webfonts, then the
+       real share of <img> elements that have settled, then window load. */
+    document.addEventListener('DOMContentLoaded', function () {
+      bump(40);
+
+      var imgs = [].slice.call(document.images);
+      if (!imgs.length) return bump(88);
+
+      var settled = 0;
+      var step = function () {
+        settled++;
+        bump(40 + (settled / imgs.length) * 48);
+      };
+
+      imgs.forEach(function (img) {
+        if (img.complete) return step();
+        img.addEventListener('load', step, { once: true });
+        img.addEventListener('error', step, { once: true });
+      });
+    });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { bump(55); });
+    }
+
+    window.addEventListener('load', function () { target = 100; });
+    var failsafe = setTimeout(function () { target = 100; }, MAX_MS);
+
+    function finish() {
+      if (done) return;
+      done = true;
+      clearTimeout(failsafe);
+      paint(100);
+
+      try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+
+      var clear = function () {
+        root.classList.remove('is-loading', 'is-loaded');
+        el.remove();
+      };
+
+      root.classList.add('is-loaded');
+      if (reduce) return clear();
+
+      el.addEventListener('transitionend', function (e) {
+        if (e.target === el && e.propertyName === 'opacity') clear();
+      }, { once: true });
+
+      /* transitionend does not fire on a backgrounded tab. */
+      setTimeout(clear, 900);
+    }
+
+    /* Ease toward the target so the bar never stalls dead and never
+       runs backwards, with a floor so the last few percent still move. */
+    (function frame() {
+      if (done) return;
+      shown += Math.max((target - shown) * 0.16, shown < target ? 0.4 : 0);
+      if (shown > target) shown = target;
+      paint(Math.round(shown));
+
+      if (target >= 100 && shown >= 99.5 && performance.now() - startedAt >= MIN_MS) {
+        return finish();
+      }
+      requestAnimationFrame(frame);
+    })();
+  })();
+</script>

@@ -6,6 +6,7 @@ import Icons from '../components/Icons.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Floating from '../components/Floating.astro';
+import Preloader from '../components/Preloader.astro';
 import '../styles/global.css';
 
 /* `title`/`description` let sub-pages (project details) override the
@@ -163,6 +164,8 @@ const jsonLd = {
 </head>
 
 <body>
+  <Preloader t={t} />
+
   <a class="skip-link" href="#main">{t.skip}</a>
 
   <Icons />

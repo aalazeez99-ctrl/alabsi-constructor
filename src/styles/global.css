@@ -1260,3 +1260,95 @@ a.lang-btn:hover { color: #fff; background: rgba(255,255,255,.12); }
   .pp-meta { gap: var(--sp-3); }
   .pp-body { padding-block: var(--sp-4); gap: var(--sp-4); }
 }
+
+/* ---------- 18. PRELOADER ------------------------------------ */
+/* Hidden until the inline script in Preloader.astro adds .is-loading
+   to <html>, so a visitor with JavaScript disabled never sees a cover
+   that cannot lift itself, and the markup costs nothing when unused. */
+
+.preloader { display: none; }
+
+html.is-loading { overflow: hidden; }
+
+html.is-loading .preloader {
+  display: grid;
+  place-items: center;
+  position: fixed;
+  inset: 0;
+  z-index: 2500;            /* above the header (900) and the FABs (850) */
+  background: var(--ink-950);
+  opacity: 1;
+  transition: opacity 420ms var(--ease);
+}
+
+html.is-loading.is-loaded .preloader { opacity: 0; }
+
+.pl-inner {
+  display: grid;
+  justify-items: center;
+  gap: var(--sp-3);
+  padding-inline: var(--sp-3);
+  text-align: center;
+}
+
+/* Two stacked copies of the mark. The base sits dim underneath; the
+   fill is clipped from the bottom by --p, so the logo builds upward
+   as the site loads. --p is written once per frame by the script. */
+.pl-mark {
+  position: relative;
+  width: clamp(72px, 18vw, 104px);
+  aspect-ratio: 656 / 641;
+}
+.pl-mark img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.pl-mark-base { opacity: .16; }
+.pl-mark-fill { clip-path: inset(calc(100% - var(--p, 0%)) 0 0 0); }
+
+.pl-brand {
+  display: grid;
+  gap: 2px;
+  margin-block-start: calc(var(--sp-1) * -1);
+}
+.pl-brand strong {
+  color: #fff;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+.pl-brand small {
+  color: rgba(255,255,255,.55);
+  font-size: .8125rem;
+}
+
+/* width, not transform: a block grows from the inline-start edge, so
+   the bar fills right-to-left in Arabic with no direction handling. */
+.pl-track {
+  width: min(220px, 60vw);
+  height: 2px;
+  border-radius: var(--r-pill);
+  background: rgba(255,255,255,.14);
+  overflow: hidden;
+}
+.pl-fill {
+  display: block;
+  height: 100%;
+  width: var(--p, 0%);
+  background: var(--teal-400);
+  border-radius: inherit;
+}
+
+.pl-pct {
+  color: rgba(255,255,255,.45);
+  font-size: .75rem;
+  letter-spacing: .04em;
+  font-variant-numeric: tabular-nums;   /* no width jitter while counting */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.is-loading .preloader { transition: none; }
+}
