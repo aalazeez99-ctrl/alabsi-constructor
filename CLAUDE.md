@@ -97,10 +97,15 @@ drives every canonical, `hreflang`, sitemap entry and the absolute `og:image` UR
   re-encoded**; it is both the brand mark and the favicon.
 
 Project photos and before/after pairs are referenced by absolute path
-(`/images/project-1.jpg`, `/images/ba-1-before.jpg`). **`public/images/` does not exist
-yet.** `src/scripts/site.js` catches the load failure and adds `.is-placeholder` to the
-wrapper, which renders a blueprint pattern. Missing photos are the expected current
-state, not a bug to fix — and any new photo slot should use the same fallback hook.
+(`/images/project-1.jpg`, `/images/ba-1-before.jpg`). `public/images/` currently holds
+**stock placeholders**, not the company's own work — the site presents them as its
+portfolio, so they are meant to be swapped for real photography. `src/scripts/site.js`
+still catches a load failure and adds `.is-placeholder` to the wrapper, which renders a
+blueprint pattern; any new photo slot should use the same fallback hook.
+
+`src/assets/hero.png` and `src/assets/about.png` do not match the `images/` files of the
+same name — `src/assets/hero.png` is `images/about-us.png` and `src/assets/about.png` is
+`images/hero.png`. Check the content, not the filename, before reusing either.
 
 Optional per-project fields (`location`, `year`, `scope`, `gallery`) are intentionally
 empty strings/arrays; `ProjectDetail.astro` guards each block so an empty value renders

@@ -239,6 +239,13 @@ top and bottom, which on this design is exactly where the logo and the strapline
 **Keep any replacement at 1200x630.** The `og:image:height` tag is derived from the
 file, so a wrong ratio is visible in the built HTML.
 
+That file is `images/hero.png` **fitted** whole into the 1200x630 frame — not cropped
+to fill it — sitting on a blurred blow-up of itself so the sides read as a soft frame
+rather than two hard bars. The poster carries the logo, headline and strapline as baked
+pixels, so any crop destroys them; fit, never fill. Astro's `getImage()` cannot do this
+(it ignores `fit: 'contain'` and `background`), which is why the shaping is baked into
+the asset instead of the build.
+
 After changing the domain, re-scrape the URL in
 [Facebook's Sharing Debugger](https://developers.facebook.com/tools/debug/) — WhatsApp
 and Facebook cache previews aggressively and will keep showing the old (missing) one.
