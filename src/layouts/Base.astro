@@ -34,11 +34,19 @@ const site = Astro.site ?? new URL('https://alabsi-alahliah.com');
 const canonical = new URL(Astro.url.pathname, site).href;
 
 /* Social preview card.
-   The source is a 1.7 MB PNG. WhatsApp — the way most of this site's
-   links will actually be shared — silently drops previews above roughly
-   300 KB, so the raw file must never be the og:image. sharp re-encodes
-   it to a ~1200px JPEG at build time, which lands comfortably under
-   that limit and is the format every scraper handles best. */
+   Two separate constraints shape this.
+
+   Ratio: the asset is authored 1200x630, the 1.91:1 slot Facebook,
+   WhatsApp and LinkedIn render large cards in. It used to be the 3:2
+   poster, which those platforms centre-cropped to 1.91:1 — cutting
+   about 86px off the top and bottom, which is exactly where the logo
+   and the strapline sit. Keep any replacement at 1200x630; the height
+   below is derived from the file so a wrong one shows up in the tags.
+
+   Weight: the source is a ~1.7 MB PNG and WhatsApp silently drops
+   previews above roughly 300 KB, so the raw file must never be the
+   og:image. sharp re-encodes it to a JPEG at build time, which lands
+   well under that and is the format every scraper handles best. */
 const OG_WIDTH = 1200;
 const OG_HEIGHT = Math.round(OG_WIDTH * (ogSource.height / ogSource.width));
 

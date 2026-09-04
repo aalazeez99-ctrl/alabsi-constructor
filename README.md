@@ -228,9 +228,16 @@ If a shared link shows no image, there are two independent causes:
 1. **The domain in `astro.config.mjs` must be the real one.** `og:image` is an absolute
    URL; if it points at a domain that does not resolve, the scraper fetches nothing.
 2. **File size.** WhatsApp silently drops previews above roughly 300 KB. The source
-   card is a 1.7 MB PNG, so it is never served directly — `Base.astro` runs it through
-   sharp into a ~1200px JPEG at build time. This only happens when you actually run
+   card is a ~1.1 MB PNG, so it is never served directly — `Base.astro` runs it through
+   sharp into a ~80 KB JPEG at build time. This only happens when you actually run
    `npm run build`.
+
+And if the image shows but is **cut off**, it is the shape. Facebook, WhatsApp and
+LinkedIn render large cards at **1.91:1** and centre-crop anything else.
+`src/assets/og.png` is authored 1200x630 to match; a 3:2 card loses about 86px off the
+top and bottom, which on this design is exactly where the logo and the strapline sit.
+**Keep any replacement at 1200x630.** The `og:image:height` tag is derived from the
+file, so a wrong ratio is visible in the built HTML.
 
 After changing the domain, re-scrape the URL in
 [Facebook's Sharing Debugger](https://developers.facebook.com/tools/debug/) — WhatsApp
