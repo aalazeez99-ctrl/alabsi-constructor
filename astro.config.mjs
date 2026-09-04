@@ -1,11 +1,19 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
   // Used for canonical URLs, hreflang and the sitemap.
   // Change this to the real domain once it is live.
   site: 'https://alabsi-alahliah.com',
+
+  // Emits sitemap-index.xml with per-language alternates for both locales.
+  integrations: [
+    sitemap({
+      i18n: { defaultLocale: 'ar', locales: { ar: 'ar-KW', en: 'en' } },
+    }),
+  ],
 
   i18n: {
     defaultLocale: 'ar',

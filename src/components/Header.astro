@@ -10,13 +10,10 @@ const { lang, t, altHref } = Astro.props;
   <div class="container header-inner">
 
     <a class="brand" href="#home" aria-label={t.brand.homeAria}>
-      <img
-        src="/logo.png"
-        alt={`${t.brand.legalName} logo`}
-        width="656"
-        height="641"
-        class="brand-mark"
-      />
+      {/* alt="" on purpose: the link already carries aria-label, and the
+          company name is in the adjacent text. Alt text here would make
+          a screen reader announce the brand three times. */}
+      <img src="/logo.png" alt="" width="656" height="641" class="brand-mark" />
       <span class="brand-text">
         <strong>{t.brand.name}</strong>
         <small>{t.brand.tagline}</small>

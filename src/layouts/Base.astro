@@ -13,26 +13,59 @@ const site = Astro.site ?? new URL('https://alabsi-alahliah.com');
 const canonical = new URL(Astro.url.pathname, site).href;
 const ogImage = new URL('/images/og.png', site).href;
 
+/* Structured data. This — not the keywords meta tag — is what actually
+   drives rich results and local/Maps eligibility in Kuwait. */
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'GeneralContractor',
+  '@id': `${new URL('/', site).href}#organization`,
   name: t.brand.legalName,
   alternateName:
     lang === 'ar'
       ? 'Alabsi Alahliah Building Construction Co.'
       : 'العبسي الأهلية للمقاولات والتشطيبات',
   url: canonical,
-  image: new URL('/logo.png', site).href,
+  image: new URL('/images/og.png', site).href,
   logo: new URL('/logo.png', site).href,
   telephone: CONTACT.phoneHref,
   email: CONTACT.email,
+  description: t.meta.description,
+  slogan: `${t.hero.titleTop} ${t.hero.titleAccent}`,
+  foundingDate: '2018',
+  knowsLanguage: ['ar', 'en'],
+  currenciesAccepted: 'KWD',
+
   address: {
     '@type': 'PostalAddress',
     addressLocality: lang === 'ar' ? 'الشويخ' : 'Shuwaikh',
+    addressRegion: lang === 'ar' ? 'محافظة العاصمة' : 'Al Asimah Governorate',
     addressCountry: 'KW',
   },
-  areaServed: 'KW',
-  slogan: `${t.hero.titleTop} ${t.hero.titleAccent}`,
+
+  /* Coordinates are for the Shuwaikh district. Replace with the exact
+     office location once confirmed — see README. */
+  geo: { '@type': 'GeoCoordinates', latitude: 29.3375, longitude: 47.92 },
+
+  areaServed: [
+    { '@type': 'Country', name: 'Kuwait' },
+    { '@type': 'AdministrativeArea', name: lang === 'ar' ? 'محافظة العاصمة' : 'Al Asimah' },
+    { '@type': 'AdministrativeArea', name: lang === 'ar' ? 'حولي' : 'Hawalli' },
+    { '@type': 'AdministrativeArea', name: lang === 'ar' ? 'الفروانية' : 'Al Farwaniyah' },
+    { '@type': 'AdministrativeArea', name: lang === 'ar' ? 'الأحمدي' : 'Al Ahmadi' },
+    { '@type': 'AdministrativeArea', name: lang === 'ar' ? 'مبارك الكبير' : 'Mubarak Al-Kabeer' },
+    { '@type': 'AdministrativeArea', name: lang === 'ar' ? 'الجهراء' : 'Al Jahra' },
+  ],
+
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: t.services.heading,
+    itemListElement: t.services.items.map((s) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: s.title, description: s.text },
+    })),
+  },
+
+  sameAs: Object.values(CONTACT.social).filter((u) => u && u !== '#'),
 };
 ---
 <!DOCTYPE html>
@@ -45,7 +78,15 @@ const jsonLd = {
 
   <title>{t.meta.title}</title>
   <meta name="description" content={t.meta.description} />
+  <meta name="keywords" content={t.meta.keywords} />
   <link rel="canonical" href={canonical} />
+
+  {/* Local/geo signals for Kuwait */}
+  <meta name="geo.region" content="KW-KU" />
+  <meta name="geo.placename" content={lang === 'ar' ? 'الشويخ، الكويت' : 'Shuwaikh, Kuwait'} />
+  <meta name="geo.position" content="29.3375;47.9200" />
+  <meta name="ICBM" content="29.3375, 47.9200" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
 
   {/* Real per-language URLs — this is what a JS-only language toggle can never give you. */}
   <link rel="alternate" hreflang="ar" href={new URL('/', site).href} />
@@ -58,8 +99,13 @@ const jsonLd = {
   <meta property="og:description" content={t.meta.description} />
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={t.brand.legalName} />
   <meta property="og:locale" content={t.meta.ogLocale} />
+  <meta property="og:locale:alternate" content={lang === 'ar' ? 'en_US' : 'ar_KW'} />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={t.meta.title} />
+  <meta name="twitter:description" content={t.meta.description} />
+  <meta name="twitter:image" content={ogImage} />
 
   {/* logo.png is served straight from public/ — never resized or re-encoded. */}
   <link rel="icon" href="/logo.png" type="image/png" />

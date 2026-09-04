@@ -31,6 +31,8 @@ export const ui = {
       title: 'العبسي الأهلية للمقاولات والتشطيبات | شركة إنشاءات في الكويت',
       description:
         'شركة العبسي الأهلية للمقاولات والتشطيبات في الشويخ، الكويت. مقاولات عامة، تصميم وتخطيط، تشطيبات داخلية وتأثيث — بأعلى معايير الجودة والسلامة.',
+      keywords:
+        'مقاولات الكويت, شركة مقاولات في الكويت, مقاولات عامة الكويت, شركة إنشاءات الكويت, مقاول بناء الكويت, تشطيبات داخلية الكويت, تشطيب شقق الكويت, ترميم فلل الكويت, ديكور داخلي الكويت, تصميم داخلي الكويت, تنفيذ مشاريع الكويت, بناء وترميم الكويت, مقاولات الشويخ, شركة مقاولات كويتية, العبسي الأهلية',
       ogLocale: 'ar_KW',
     },
 
@@ -264,6 +266,8 @@ export const ui = {
       title: 'Alabsi Alahliah Building Construction Co. | Contracting in Kuwait',
       description:
         'Alabsi Alahliah Building Construction Co., Shuwaikh, Kuwait. General contracting, design and planning, interior finishing and furnishing — held to the highest standards of quality and safety.',
+      keywords:
+        'construction company Kuwait, general contracting Kuwait, contracting company Kuwait, building contractor Kuwait, interior finishing Kuwait, fit-out Kuwait, interior design Kuwait, villa construction Kuwait, renovation Kuwait, civil works Kuwait, turnkey projects Kuwait, Shuwaikh contractor, Kuwaiti construction company, Alabsi Alahliah',
       ogLocale: 'en_US',
     },
 
