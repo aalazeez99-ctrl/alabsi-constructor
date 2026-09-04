@@ -162,9 +162,12 @@ Three properties are load-bearing:
 - The overlay is `display: none` in CSS and only becomes visible once the script adds
   `.is-loading` to `<html>`. With JavaScript off it never appears, so no visitor is
   left under a cover that cannot lift itself.
-- Progress is measured (DOM parse → `document.fonts.ready` → the share of
-  `document.images` that have settled → `window.load`), not a fake timer. A `MAX_MS`
-  failsafe forces completion so the site always opens.
+- The bar shows whichever is lower: measured progress (DOM parse → `document.fonts.ready`
+  → the share of `document.images` that have settled → `window.load`) or a linear fill
+  across `PACE_MS`. The pace exists because a warm cache finishes in a few hundred ms and
+  a bar that hits 100% then waits reads as a hang; real signals still hold it back, so a
+  slow load is reported honestly. A `MAX_MS` failsafe forces completion regardless, so
+  the site always opens.
 - It shows once per session via `sessionStorage`. Project pages are separate documents,
   so without this the overlay would replay on every internal link. `SESSION_ONCE` in
   the component flips that.

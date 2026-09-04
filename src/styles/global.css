@@ -649,15 +649,20 @@ a.lang-btn:hover { color: #fff; background: rgba(255,255,255,.12); }
   overflow: hidden;
   border: 1px solid var(--line);
   box-shadow: var(--shadow-lg);
-  aspect-ratio: 4 / 3;
+  background: var(--surface);
+  /* Matches the 3:2 of the source asset. This image is a branded key
+     visual with the logo and headline baked in, not a photograph, so
+     any crop slices through the lettering — at 4/3 the box could only
+     shave ~11% of the width while the text panel takes up nearly half.
+     Match the ratio instead and nothing is cut. */
+  aspect-ratio: 3 / 2;
 }
 .about-media img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover;
-  /* Crops away the branded text panel baked into this asset,
-     keeping only the architectural photography. */
-  object-position: 88% 50%;
+  /* contain, not cover: if a differently shaped image is dropped in
+     later it letterboxes against the surface rather than losing text. */
+  object-fit: contain;
 }
 .about-body h2 { font-size: clamp(1.75rem, 3.4vw, 2.5rem); font-weight: 700; margin-block-end: var(--sp-2); }
 .about-body p { color: var(--text-muted); margin-block-end: var(--sp-2); }

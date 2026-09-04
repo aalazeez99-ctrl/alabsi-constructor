@@ -3,9 +3,9 @@
  * First-paint preloader.
  *
  * Two stacked copies of the logo: a dim base and a full-opacity copy
- * clipped from the bottom, rising with real load progress — the mark
- * builds itself while the site loads. A thin bar and a percentage sit
- * under it.
+ * clipped from the bottom, rising as the site loads — the mark builds
+ * itself. A thin bar and a percentage sit under it. The fill is paced
+ * over PACE_MS but never runs ahead of what has actually loaded.
  *
  * Deliberately NOT in site.js. That bundle is deferred, so it only runs
  * once the document has parsed — which is exactly the window this screen
@@ -60,8 +60,8 @@ const { t } = Astro.props;
     root.classList.add('is-loading');
 
     var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var MIN_MS = reduce ? 150 : 500;   // a 40ms flash of a loader looks broken
-    var MAX_MS = 5000;                 // hard ceiling: the site always opens
+    var PACE_MS = 3000;   // the bar is paced across this, see the frame loop
+    var MAX_MS = 6000;    // hard ceiling: the site always opens
     var startedAt = performance.now();
 
     var target = 8;
@@ -131,15 +131,24 @@ const { t } = Astro.props;
       setTimeout(clear, 900);
     }
 
-    /* Ease toward the target so the bar never stalls dead and never
-       runs backwards, with a floor so the last few percent still move. */
+    /* The bar shows whichever is LOWER: measured progress, or a linear
+       fill across PACE_MS. On a warm cache everything is loaded within
+       a few hundred ms, so without the pace the bar would jump to 100%
+       and then sit there for the rest of the hold, which reads as a
+       hang. Real signals can still hold it back — never push it on
+       faster — so a genuinely slow load is reported honestly.
+       Easing toward that value keeps it from stepping or reversing. */
     (function frame() {
       if (done) return;
-      shown += Math.max((target - shown) * 0.16, shown < target ? 0.4 : 0);
-      if (shown > target) shown = target;
+
+      var elapsed = performance.now() - startedAt;
+      var paced = Math.min(target, (elapsed / PACE_MS) * 100);
+
+      shown += Math.max((paced - shown) * 0.16, shown < paced ? 0.4 : 0);
+      if (shown > paced) shown = paced;
       paint(Math.round(shown));
 
-      if (target >= 100 && shown >= 99.5 && performance.now() - startedAt >= MIN_MS) {
+      if (target >= 100 && shown >= 99.5 && elapsed >= PACE_MS) {
         return finish();
       }
       requestAnimationFrame(frame);
