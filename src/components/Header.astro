@@ -1,0 +1,79 @@
+---
+import Icon from './Icon.astro';
+import { LOCALES, ui } from '../i18n/ui.js';
+
+const { lang, t, altHref } = Astro.props;
+---
+<header class="site-header" id="header">
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <div class="container header-inner">
+
+    <a class="brand" href="#home" aria-label={t.brand.homeAria}>
+      <img
+        src="/logo.png"
+        alt={`${t.brand.legalName} logo`}
+        width="656"
+        height="641"
+        class="brand-mark"
+      />
+      <span class="brand-text">
+        <strong>{t.brand.name}</strong>
+        <small>{t.brand.tagline}</small>
+      </span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label={t.nav.aria}>
+      <ul class="nav-list">
+        {t.nav.links.map((link, i) => (
+          <li>
+            <a
+              href={link.href}
+              class:list={['nav-link', i === 0 && 'is-active']}
+              aria-current={i === 0 ? 'true' : undefined}
+            >{link.label}</a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="nav-actions">
+        {/* Real links, not a JS toggle: each language is its own indexable page. */}
+        <div class="lang-switch" role="group" aria-label={t.nav.langAria}>
+          {LOCALES.map((code) => (
+            code === lang ? (
+              <span class="lang-btn is-active" aria-current="true" lang={code}>
+                {ui[code].localeName}
+              </span>
+            ) : (
+              <a class="lang-btn" href={altHref} lang={code} hreflang={code}>
+                {ui[code].localeName}
+              </a>
+            )
+          ))}
+        </div>
+
+        <a href="#contact" class="btn btn-primary btn-sm">
+          <Icon name="phone" />
+          <span>{t.nav.contact}</span>
+        </a>
+      </div>
+    </nav>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      id="menuToggle"
+      aria-expanded="false"
+      aria-controls="nav"
+      aria-label={t.nav.menuOpen}
+      data-label-open={t.nav.menuOpen}
+      data-label-close={t.nav.menuClose}
+    >
+      <Icon name="menu" class="ico-open" />
+      <Icon name="close" class="ico-close" />
+    </button>
+
+  </div>
+</header>
+
+<div class="nav-scrim" id="navScrim" hidden></div>

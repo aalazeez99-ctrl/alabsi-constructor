@@ -1,0 +1,22 @@
+---
+const { t } = Astro.props;
+---
+<section class="section process" id="process" aria-labelledby="process-h">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">{t.process.kicker}</p>
+      <h2 id="process-h">{t.process.heading}</h2>
+      <p class="section-sub">{t.process.sub}</p>
+    </header>
+
+    <ol class="steps">
+      {t.process.steps.map((s, i) => (
+        <li class="step reveal" data-delay={i || undefined}>
+          <span class="step-num">{i + 1}</span>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

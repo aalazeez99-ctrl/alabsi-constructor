@@ -1,0 +1,43 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import aboutImage from '../assets/about.png';
+
+const { t } = Astro.props;
+---
+<section class="section about" id="about" aria-labelledby="about-h">
+  <div class="container about-grid">
+
+    <div class="about-media reveal">
+      <Image
+        src={aboutImage}
+        alt={t.about.imageAlt}
+        widths={[480, 720, 1080]}
+        sizes="(max-width: 900px) 100vw, 50vw"
+        format="webp"
+        quality={72}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <div class="about-body reveal" data-delay="1">
+      <p class="kicker">{t.about.kicker}</p>
+      <h2 id="about-h">{t.about.heading}</h2>
+
+      {t.about.paragraphs.map((p) => <p>{p}</p>)}
+
+      <ul class="checklist">
+        {t.about.features.map((f) => (
+          <li><Icon name="check" /><span>{f}</span></li>
+        ))}
+      </ul>
+
+      <a href="#contact" class="btn btn-primary">
+        <span>{t.about.cta}</span>
+        <Icon name="arrow" dir />
+      </a>
+    </div>
+
+  </div>
+</section>

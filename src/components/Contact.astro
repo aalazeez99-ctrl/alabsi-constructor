@@ -1,0 +1,101 @@
+---
+import Icon from './Icon.astro';
+import { CONTACT } from '../i18n/ui.js';
+
+const { t } = Astro.props;
+
+/* Strings the client script needs at runtime. Passed as JSON rather than
+   duplicated in JS, so translations stay in one file. */
+const runtime = {
+  whatsapp: CONTACT.whatsapp,
+  email: CONTACT.email,
+  formError: t.contact.formError,
+  msg: t.contact.msg,
+};
+---
+<section class="section contact" id="contact" aria-labelledby="contact-h">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">{t.contact.kicker}</p>
+      <h2 id="contact-h">{t.contact.heading}</h2>
+      <p class="section-sub">{t.contact.sub}</p>
+    </header>
+
+    <div class="contact-grid">
+
+      <form class="contact-form reveal" id="quoteForm" novalidate>
+        <script type="application/json" id="formConfig" set:html={JSON.stringify(runtime)} />
+
+        <div id="formError" class="form-error-summary" role="alert" tabindex="-1" hidden></div>
+
+        <div class="field">
+          <label for="f-name">{t.contact.name} <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="f-name" name="name" autocomplete="name" required />
+          <p class="hint" id="f-name-err" hidden>{t.contact.nameError}</p>
+        </div>
+
+        <div class="field">
+          <label for="f-phone">{t.contact.phone} <span class="req" aria-hidden="true">*</span></label>
+          <input type="tel" id="f-phone" name="phone" inputmode="tel" autocomplete="tel" dir="ltr" required />
+          <p class="hint" id="f-phone-err" hidden>{t.contact.phoneError}</p>
+        </div>
+
+        <div class="field">
+          <label for="f-type">{t.contact.type}</label>
+          <div class="select-wrap">
+            <select id="f-type" name="type">
+              {t.contact.types.map((o) => <option value={o.value}>{o.label}</option>)}
+            </select>
+            <Icon name="chevron" />
+          </div>
+        </div>
+
+        <div class="field field-full">
+          <label for="f-msg">{t.contact.message}</label>
+          <textarea id="f-msg" name="message" rows="4"></textarea>
+          <p class="hint hint-muted">{t.contact.messageHint}</p>
+        </div>
+
+        <div class="form-actions field-full">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <Icon name="whatsapp" />
+            <span>{t.contact.sendWhatsapp}</span>
+          </button>
+          <button type="button" class="btn btn-ghost btn-lg" id="sendMail">
+            <Icon name="mail" />
+            <span>{t.contact.sendMail}</span>
+          </button>
+        </div>
+
+        <p class="form-note field-full">{t.contact.note}</p>
+      </form>
+
+      <aside class="contact-cards reveal" data-delay="1">
+        <a class="contact-card" href={`https://wa.me/${CONTACT.whatsapp}`} target="_blank" rel="noopener">
+          <Icon name="whatsapp" size="lg" />
+          <span class="cc-label">{t.contact.cards.whatsapp}</span>
+          <span class="cc-value" dir="ltr">{CONTACT.phoneDisplay}</span>
+        </a>
+
+        <a class="contact-card" href={`tel:${CONTACT.phoneHref}`}>
+          <Icon name="phone" size="lg" />
+          <span class="cc-label">{t.contact.cards.phone}</span>
+          <span class="cc-value" dir="ltr">{CONTACT.phoneDisplay}</span>
+        </a>
+
+        <a class="contact-card" href={`mailto:${CONTACT.email}`}>
+          <Icon name="mail" size="lg" />
+          <span class="cc-label">{t.contact.cards.email}</span>
+          <span class="cc-value cc-break" dir="ltr">{CONTACT.email}</span>
+        </a>
+
+        <a class="contact-card" href={CONTACT.mapsUrl} target="_blank" rel="noopener">
+          <Icon name="pin" size="lg" />
+          <span class="cc-label">{t.contact.cards.location}</span>
+          <span class="cc-value">{t.contact.cards.locationValue}</span>
+        </a>
+      </aside>
+
+    </div>
+  </div>
+</section>

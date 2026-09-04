@@ -1,0 +1,24 @@
+---
+import Icon from './Icon.astro';
+const { t } = Astro.props;
+---
+<section class="section services" id="services" aria-labelledby="services-h">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">{t.services.kicker}</p>
+      <h2 id="services-h">{t.services.heading}</h2>
+      <p class="section-sub">{t.services.sub}</p>
+    </header>
+
+    <div class="cards">
+      {t.services.items.map((s, i) => (
+        <article class="card reveal" data-delay={i || undefined}>
+          <span class="card-num">{String(i + 1).padStart(2, '0')}</span>
+          <Icon name={s.icon} size="lg" class="card-ico" />
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,53 @@
+---
+const { t } = Astro.props;
+---
+<section class="section projects" id="projects" aria-labelledby="projects-h">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">{t.projects.kicker}</p>
+      <h2 id="projects-h">{t.projects.heading}</h2>
+      <p class="section-sub">{t.projects.sub}</p>
+    </header>
+
+    <div class="filters reveal" role="group" aria-label={t.projects.filtersAria}>
+      {t.projects.filters.map((f, i) => (
+        <button
+          type="button"
+          class:list={['chip', i === 0 && 'is-active']}
+          data-filter={f.key}
+          aria-pressed={i === 0 ? 'true' : 'false'}
+        >{f.label}</button>
+      ))}
+    </div>
+
+    {/*
+      Photos live in public/images/ as project-1.jpg … project-4.jpg.
+      They are not in src/assets because they do not exist yet — drop the
+      real files in and they appear; until then each tile falls back to a
+      blueprint pattern instead of a broken-image icon.
+    */}
+    <div class="project-grid" id="projectGrid">
+      {t.projects.items.map((p, i) => (
+        <article class="project reveal" data-delay={i || undefined} data-sector={p.sector}>
+          <div class="project-media">
+            <img
+              src={p.image}
+              alt={`${p.title} — ${p.text}`}
+              loading="lazy"
+              decoding="async"
+              width="800"
+              height="600"
+            />
+          </div>
+          <div class="project-body">
+            <span class="tag">{p.tag}</span>
+            <h3>{p.title}</h3>
+            <p>{p.text}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <p class="projects-empty" id="projectsEmpty" hidden>{t.projects.empty}</p>
+  </div>
+</section>

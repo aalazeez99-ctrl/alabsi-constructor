@@ -1,0 +1,16 @@
+---
+import Icon from './Icon.astro';
+const { t } = Astro.props;
+---
+<section class="values" aria-labelledby="values-h">
+  <h2 class="sr-only" id="values-h">{t.values.heading}</h2>
+  <div class="container values-grid">
+    {t.values.items.map((v, i) => (
+      <div class="value reveal" data-delay={i || undefined}>
+        <Icon name={v.icon} size="lg" />
+        <h3>{v.title}</h3>
+        <p>{v.text}</p>
+      </div>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,63 @@
+---
+import Icon from './Icon.astro';
+import { CONTACT } from '../i18n/ui.js';
+
+const { t } = Astro.props;
+
+const socials = [
+  { name: 'instagram', label: 'Instagram', href: CONTACT.social.instagram },
+  { name: 'linkedin', label: 'LinkedIn', href: CONTACT.social.linkedin },
+  { name: 'facebook', label: 'Facebook', href: CONTACT.social.facebook },
+  { name: 'x', label: 'X', href: CONTACT.social.x },
+];
+---
+<footer class="site-footer">
+  <div class="container footer-grid">
+
+    <div class="footer-col footer-brand">
+      <div class="brand">
+        <img src="/logo.png" alt="" width="656" height="641" class="brand-mark" loading="lazy" />
+        <span class="brand-text">
+          <strong>{t.brand.name}</strong>
+          <small>{t.brand.tagline}</small>
+        </span>
+      </div>
+      <p>{t.footer.desc}</p>
+      <div class="socials">
+        {socials.map((s) => (
+          <a href={s.href} aria-label={s.label}><Icon name={s.name} /></a>
+        ))}
+      </div>
+    </div>
+
+    <nav class="footer-col" aria-labelledby="fl-h">
+      <h2 class="footer-h" id="fl-h">{t.footer.links}</h2>
+      <ul>
+        {t.nav.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="footer-col">
+      <h2 class="footer-h">{t.footer.contact}</h2>
+      <ul class="footer-contact">
+        <li><Icon name="phone" /><a href={`tel:${CONTACT.phoneHref}`} dir="ltr">{CONTACT.phoneDisplay}</a></li>
+        <li><Icon name="mail" /><a href={`mailto:${CONTACT.email}`} dir="ltr" class="cc-break">{CONTACT.email}</a></li>
+        <li><Icon name="pin" /><span>{t.contact.cards.locationValue}</span></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h2 class="footer-h">{t.footer.ctaHeading}</h2>
+      <p>{t.footer.ctaText}</p>
+      <a href="#contact" class="btn btn-primary btn-sm">
+        <span>{t.footer.ctaButton}</span>
+        <Icon name="arrow" dir />
+      </a>
+    </div>
+
+  </div>
+
+  <div class="container footer-bottom">
+    <p>{t.footer.copy}</p>
+  </div>
+</footer>

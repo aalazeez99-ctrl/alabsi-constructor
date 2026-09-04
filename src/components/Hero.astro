@@ -1,0 +1,59 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import heroImage from '../assets/hero.png';
+
+const { t } = Astro.props;
+---
+<section class="hero" id="home">
+  <div class="hero-media">
+    {/* sharp emits responsive WebP at build time — the 2 MB PNG never ships. */}
+    <Image
+      src={heroImage}
+      alt={t.hero.imageAlt}
+      widths={[640, 960, 1280, 1920]}
+      sizes="100vw"
+      format="webp"
+      quality={72}
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
+  </div>
+
+  <div class="container hero-inner">
+    <p class="eyebrow reveal">
+      <Icon name="star" />
+      <span>{t.hero.eyebrow}</span>
+    </p>
+
+    <h1 class="hero-title reveal" data-delay="1">
+      <span>{t.hero.titleTop}</span>
+      <span class="accent">{t.hero.titleAccent}</span>
+    </h1>
+
+    <p class="hero-lead reveal" data-delay="2">{t.hero.lead}</p>
+
+    <div class="hero-cta reveal" data-delay="3">
+      <a href="#contact" class="btn btn-primary btn-lg">
+        <span>{t.hero.ctaPrimary}</span>
+        <Icon name="arrow" dir />
+      </a>
+      <a href="#projects" class="btn btn-ghost btn-lg">
+        <Icon name="layers" />
+        <span>{t.hero.ctaSecondary}</span>
+      </a>
+    </div>
+
+    <dl class="stats reveal" data-delay="4">
+      {t.hero.stats.map((s) => (
+        <div class="stat">
+          <dt class="stat-num">
+            <span data-count={s.count}>0</span><span class="stat-suffix">{s.suffix}</span>
+          </dt>
+          <dd class="stat-label">{s.label}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>

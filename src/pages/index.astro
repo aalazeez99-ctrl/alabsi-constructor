@@ -1,0 +1,23 @@
+---
+import Base from "../layouts/Base.astro";
+import Hero from "../components/Hero.astro";
+import Values from "../components/Values.astro";
+import Services from "../components/Services.astro";
+import Process from "../components/Process.astro";
+import Projects from "../components/Projects.astro";
+import About from "../components/About.astro";
+import Contact from "../components/Contact.astro";
+import { useTranslations } from "../i18n/ui.js";
+
+const lang = "ar";
+const t = useTranslations(lang);
+---
+<Base lang={lang}>
+  <Hero t={t} />
+  <Values t={t} />
+  <Services t={t} />
+  <Process t={t} />
+  <Projects t={t} />
+  <About t={t} />
+  <Contact t={t} />
+</Base>
