@@ -2,7 +2,7 @@
 import Icon from './Icon.astro';
 import { CONTACT } from '../i18n/ui.js';
 
-const { t } = Astro.props;
+const { t, navPrefix = '' } = Astro.props;
 
 const socials = [
   { name: 'instagram', label: 'Instagram', href: CONTACT.social.instagram },
@@ -33,7 +33,7 @@ const socials = [
     <nav class="footer-col" aria-labelledby="fl-h">
       <h2 class="footer-h" id="fl-h">{t.footer.links}</h2>
       <ul>
-        {t.nav.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        {t.nav.links.map((l) => <li><a href={`${navPrefix}${l.href}`}>{l.label}</a></li>)}
       </ul>
     </nav>
 
@@ -49,7 +49,7 @@ const socials = [
     <div class="footer-col">
       <h2 class="footer-h">{t.footer.ctaHeading}</h2>
       <p>{t.footer.ctaText}</p>
-      <a href="#contact" class="btn btn-primary btn-sm">
+      <a href={`${navPrefix}#contact`} class="btn btn-primary btn-sm">
         <span>{t.footer.ctaButton}</span>
         <Icon name="arrow" dir />
       </a>

@@ -142,6 +142,19 @@ export const ui = {
       heading: 'أعمال تتحدث عن نفسها',
       sub: 'نماذج مختارة من مشاريع سكنية وتجارية وضيافة نفّذناها.',
       filtersAria: 'تصفية المشاريع حسب القطاع',
+      viewProject: 'تفاصيل المشروع',
+      detail: {
+        back: 'كل المشاريع',
+        sectorLabel: 'القطاع',
+        locationLabel: 'الموقع',
+        yearLabel: 'سنة التنفيذ',
+        scopeLabel: 'نطاق العمل',
+        galleryLabel: 'صور المشروع',
+        ctaHeading: 'مشروع مشابه في ذهنك؟',
+        ctaText: 'أخبرنا بالتفاصيل وسنعود إليك بعرض واضح.',
+        ctaButton: 'اطلب عرض سعر',
+        moreHeading: 'مشاريع أخرى',
+      },
       filters: [
         { key: 'all', label: 'الكل' },
         { key: 'residential', label: 'سكني' },
@@ -152,6 +165,11 @@ export const ui = {
       items: [
         {
           image: '/images/project-1.jpg',
+          slug: 'villa-armonia',
+          location: '',
+          year: '',
+          scope: [],
+          gallery: [],
           sector: 'residential',
           tag: 'سكني',
           title: 'فيلا أرمونيا',
@@ -159,6 +177,11 @@ export const ui = {
         },
         {
           image: '/images/project-2.jpg',
+          slug: 'zen-office',
+          location: '',
+          year: '',
+          scope: [],
+          gallery: [],
           sector: 'commercial',
           tag: 'تجاري',
           title: 'مكتب زين',
@@ -166,6 +189,11 @@ export const ui = {
         },
         {
           image: '/images/project-3.jpg',
+          slug: 'penthouse-360',
+          location: '',
+          year: '',
+          scope: [],
+          gallery: [],
           sector: 'residential',
           tag: 'سكني',
           title: 'بنتهاوس ٣٦٠',
@@ -173,10 +201,72 @@ export const ui = {
         },
         {
           image: '/images/project-4.jpg',
+          slug: 'boutique-hotel',
+          location: '',
+          year: '',
+          scope: [],
+          gallery: [],
           sector: 'hospitality',
           tag: 'ضيافة',
           title: 'فندق بوتيك',
           text: 'تجديد شامل وتشطيب لتجربة إقامة من فئة الخمس نجوم.',
+        },
+      ],
+    },
+
+    /* Placeholder pairs — replace the titles, captions and images with
+       real before/after photos of your own work. See README. */
+    beforeAfter: {
+      kicker: 'قبل وبعد',
+      heading: 'الفرق الذي نصنعه',
+      sub: 'اسحب المقبض لمقارنة حالة الموقع قبل العمل وبعد التسليم.',
+      beforeLabel: 'قبل',
+      afterLabel: 'بعد',
+      sliderLabel: 'اسحب لمقارنة صورة ما قبل العمل بصورة ما بعده',
+      items: [
+        {
+          title: 'تشطيب صالة سكنية',
+          caption: 'إعادة تصميم كاملة للأرضيات والإضاءة والأسقف.',
+          before: '/images/ba-1-before.jpg',
+          after: '/images/ba-1-after.jpg',
+        },
+        {
+          title: 'تجديد واجهة تجارية',
+          caption: 'معالجة الواجهة وأعمال الكلادينج والإنارة الخارجية.',
+          before: '/images/ba-2-before.jpg',
+          after: '/images/ba-2-after.jpg',
+        },
+      ],
+    },
+
+    faq: {
+      kicker: 'أسئلة شائعة',
+      heading: 'أسئلة قبل أن تبدأ',
+      sub: 'إن لم تجد إجابتك هنا، تواصل معنا مباشرة.',
+      items: [
+        {
+          q: 'ما المناطق التي تغطونها؟',
+          a: 'نعمل في محافظات الكويت الست: العاصمة، حولي، الفروانية، الأحمدي، مبارك الكبير، والجهراء.',
+        },
+        {
+          q: 'هل أحصل على عرض سعر قبل بدء العمل؟',
+          a: 'نعم. بعد معاينة الموقع نقدّم عرض سعر مفصّل وجدولاً زمنياً معتمداً، ولا يبدأ التنفيذ قبل اعتمادك لهما.',
+        },
+        {
+          q: 'كيف أحجز معاينة للموقع؟',
+          a: 'أرسل لنا تفاصيل مشروعك عبر واتساب أو الهاتف أو النموذج في هذه الصفحة، وسنرتّب موعد المعاينة لمناقشة نطاق العمل.',
+        },
+        {
+          q: 'هل تنفذون التصميم والتنفيذ معاً؟',
+          a: 'نعم، نغطي دورة المشروع كاملة: التصميم والتخطيط، المقاولات العامة، التشطيبات الداخلية، والتأثيث — تحت إشراف فريق واحد ومسؤولية واحدة.',
+        },
+        {
+          q: 'كم يستغرق المشروع؟',
+          a: 'تختلف المدة حسب نوع المشروع ومساحته ونطاق العمل. نحدّد جدولاً زمنياً واضحاً ضمن عرض السعر قبل البدء.',
+        },
+        {
+          q: 'كيف أتابع سير العمل؟',
+          a: 'يتولى فريق ميداني وإشراف هندسي المتابعة اليومية لمعايير الجودة والسلامة، مع تقارير تقدّم دورية.',
         },
       ],
     },
@@ -377,6 +467,19 @@ export const ui = {
       heading: 'Work that speaks for itself',
       sub: 'Selected residential, commercial and hospitality projects we have delivered.',
       filtersAria: 'Filter projects by sector',
+      viewProject: 'View project',
+      detail: {
+        back: 'All projects',
+        sectorLabel: 'Sector',
+        locationLabel: 'Location',
+        yearLabel: 'Year completed',
+        scopeLabel: 'Scope of work',
+        galleryLabel: 'Project gallery',
+        ctaHeading: 'Have a similar project in mind?',
+        ctaText: 'Tell us the details and we will come back with a clear proposal.',
+        ctaButton: 'Request a quote',
+        moreHeading: 'Other projects',
+      },
       filters: [
         { key: 'all', label: 'All' },
         { key: 'residential', label: 'Residential' },
@@ -387,6 +490,11 @@ export const ui = {
       items: [
         {
           image: '/images/project-1.jpg',
+          slug: 'villa-armonia',
+          location: '',
+          year: '',
+          scope: [],
+          gallery: [],
           sector: 'residential',
           tag: 'Residential',
           title: 'Villa Armonia',
@@ -394,6 +502,11 @@ export const ui = {
         },
         {
           image: '/images/project-2.jpg',
+          slug: 'zen-office',
+          location: '',
+          year: '',
+          scope: [],
+          gallery: [],
           sector: 'commercial',
           tag: 'Commercial',
           title: 'Zen Office',
@@ -401,6 +514,11 @@ export const ui = {
         },
         {
           image: '/images/project-3.jpg',
+          slug: 'penthouse-360',
+          location: '',
+          year: '',
+          scope: [],
+          gallery: [],
           sector: 'residential',
           tag: 'Residential',
           title: 'Penthouse 360',
@@ -408,10 +526,72 @@ export const ui = {
         },
         {
           image: '/images/project-4.jpg',
+          slug: 'boutique-hotel',
+          location: '',
+          year: '',
+          scope: [],
+          gallery: [],
           sector: 'hospitality',
           tag: 'Hospitality',
           title: 'Boutique Hotel',
           text: 'Full renovation and fit-out for a five-star stay.',
+        },
+      ],
+    },
+
+    /* Placeholder pairs — replace the titles, captions and images with
+       real before/after photos of your own work. See README. */
+    beforeAfter: {
+      kicker: 'Before & after',
+      heading: 'The difference we make',
+      sub: 'Drag the handle to compare the site before work started and after handover.',
+      beforeLabel: 'Before',
+      afterLabel: 'After',
+      sliderLabel: 'Drag to compare the before and after photo',
+      items: [
+        {
+          title: 'Residential living room fit-out',
+          caption: 'Complete rework of flooring, lighting and ceilings.',
+          before: '/images/ba-1-before.jpg',
+          after: '/images/ba-1-after.jpg',
+        },
+        {
+          title: 'Commercial facade renovation',
+          caption: 'Facade treatment, cladding works and exterior lighting.',
+          before: '/images/ba-2-before.jpg',
+          after: '/images/ba-2-after.jpg',
+        },
+      ],
+    },
+
+    faq: {
+      kicker: 'FAQ',
+      heading: 'Questions before you start',
+      sub: 'If your question is not answered here, contact us directly.',
+      items: [
+        {
+          q: 'Which areas do you cover?',
+          a: 'We work across all six governorates of Kuwait: Al Asimah, Hawalli, Al Farwaniyah, Al Ahmadi, Mubarak Al-Kabeer and Al Jahra.',
+        },
+        {
+          q: 'Do I get a quote before work begins?',
+          a: 'Yes. After a site visit we provide an itemised quote and an agreed schedule, and nothing starts until you approve both.',
+        },
+        {
+          q: 'How do I book a site visit?',
+          a: 'Send us your project details by WhatsApp, phone, or the form on this page, and we will arrange a visit to discuss the scope.',
+        },
+        {
+          q: 'Do you handle both design and construction?',
+          a: 'Yes. We cover the full project lifecycle — design and planning, general contracting, interior finishing and furnishing — under one team and one line of responsibility.',
+        },
+        {
+          q: 'How long does a project take?',
+          a: 'It depends on the type, area and scope of work. We set out a clear schedule as part of the quote before starting.',
+        },
+        {
+          q: 'How do I follow progress?',
+          a: 'A site team under engineering supervision carries out daily quality and safety checks, with regular progress reports.',
         },
       ],
     },
@@ -498,4 +678,9 @@ export function useTranslations(lang) {
 /** Path to the same page in the other locale. */
 export function altPath(lang) {
   return lang === 'en' ? '/' : '/en/';
+}
+
+/** URL of a project detail page in the given locale. */
+export function projectPath(lang, slug) {
+  return lang === 'en' ? `/en/projects/${slug}/` : `/projects/${slug}/`;
 }

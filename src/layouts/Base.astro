@@ -1,17 +1,53 @@
 ---
+import { getImage } from 'astro:assets';
 import { useTranslations, altPath, CONTACT } from '../i18n/ui.js';
+import ogSource from '../assets/og.png';
 import Icons from '../components/Icons.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Floating from '../components/Floating.astro';
 import '../styles/global.css';
 
-const { lang = 'ar' } = Astro.props;
+/* `title`/`description` let sub-pages (project details) override the
+   site defaults; `altHref` lets them point the language switch at their
+   own counterpart rather than the home page. */
+const {
+  lang = 'ar',
+  title: titleOverride,
+  description: descOverride,
+  altHref: altHrefOverride,
+} = Astro.props;
+
 const t = useTranslations(lang);
+
+const pageTitle = titleOverride ?? t.meta.title;
+const pageDesc = descOverride ?? t.meta.description;
+const langAltHref = altHrefOverride ?? altPath(lang);
+
+/* Nav items are same-page anchors like "#services". On a sub-page those
+   anchors point at nothing, so prefix them with the home path there. */
+const homeBase = lang === 'en' ? '/en/' : '/';
+const navPrefix = Astro.url.pathname === homeBase ? '' : homeBase;
 
 const site = Astro.site ?? new URL('https://alabsi-alahliah.com');
 const canonical = new URL(Astro.url.pathname, site).href;
-const ogImage = new URL('/images/og.png', site).href;
+
+/* Social preview card.
+   The source is a 1.7 MB PNG. WhatsApp — the way most of this site's
+   links will actually be shared — silently drops previews above roughly
+   300 KB, so the raw file must never be the og:image. sharp re-encodes
+   it to a ~1200px JPEG at build time, which lands comfortably under
+   that limit and is the format every scraper handles best. */
+const OG_WIDTH = 1200;
+const OG_HEIGHT = Math.round(OG_WIDTH * (ogSource.height / ogSource.width));
+
+const ogCard = await getImage({
+  src: ogSource,
+  width: OG_WIDTH,
+  format: 'jpeg',
+  quality: 78,
+});
+const ogImage = new URL(ogCard.src, site).href;
 
 /* Structured data. This — not the keywords meta tag — is what actually
    drives rich results and local/Maps eligibility in Kuwait. */
@@ -25,7 +61,7 @@ const jsonLd = {
       ? 'Alabsi Alahliah Building Construction Co.'
       : 'العبسي الأهلية للمقاولات والتشطيبات',
   url: canonical,
-  image: new URL('/images/og.png', site).href,
+  image: ogImage,
   logo: new URL('/logo.png', site).href,
   telephone: CONTACT.phoneHref,
   email: CONTACT.email,
@@ -76,8 +112,8 @@ const jsonLd = {
   <meta name="theme-color" content="#062A33" />
   <meta name="generator" content={Astro.generator} />
 
-  <title>{t.meta.title}</title>
-  <meta name="description" content={t.meta.description} />
+  <title>{pageTitle}</title>
+  <meta name="description" content={pageDesc} />
   <meta name="keywords" content={t.meta.keywords} />
   <link rel="canonical" href={canonical} />
 
@@ -89,22 +125,27 @@ const jsonLd = {
   <meta name="robots" content="index, follow, max-image-preview:large" />
 
   {/* Real per-language URLs — this is what a JS-only language toggle can never give you. */}
-  <link rel="alternate" hreflang="ar" href={new URL('/', site).href} />
-  <link rel="alternate" hreflang="en" href={new URL('/en/', site).href} />
+  <link rel="alternate" hreflang="ar" href={new URL(lang === 'ar' ? Astro.url.pathname : langAltHref, site).href} />
+  <link rel="alternate" hreflang="en" href={new URL(lang === 'en' ? Astro.url.pathname : langAltHref, site).href} />
   <link rel="alternate" hreflang="x-default" href={new URL('/', site).href} />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content={t.brand.legalName} />
-  <meta property="og:title" content={t.meta.title} />
-  <meta property="og:description" content={t.meta.description} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={pageDesc} />
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={ogImage} />
+  {/* Explicit dimensions make renderers show a large card instead of
+      falling back to a small thumbnail while they measure the file. */}
+  <meta property="og:image:width" content={String(OG_WIDTH)} />
+  <meta property="og:image:height" content={String(OG_HEIGHT)} />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:alt" content={t.brand.legalName} />
   <meta property="og:locale" content={t.meta.ogLocale} />
   <meta property="og:locale:alternate" content={lang === 'ar' ? 'en_US' : 'ar_KW'} />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content={t.meta.title} />
-  <meta name="twitter:description" content={t.meta.description} />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={pageDesc} />
   <meta name="twitter:image" content={ogImage} />
 
   {/* logo.png is served straight from public/ — never resized or re-encoded. */}
@@ -125,13 +166,13 @@ const jsonLd = {
   <a class="skip-link" href="#main">{t.skip}</a>
 
   <Icons />
-  <Header lang={lang} t={t} altHref={altPath(lang)} />
+  <Header lang={lang} t={t} altHref={langAltHref} navPrefix={navPrefix} />
 
   <main id="main">
     <slot />
   </main>
 
-  <Footer lang={lang} t={t} />
+  <Footer lang={lang} t={t} navPrefix={navPrefix} />
   <Floating t={t} />
 
   <script src="../scripts/site.js"></script>

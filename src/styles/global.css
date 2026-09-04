@@ -971,3 +971,292 @@ a.lang-btn:hover { color: #fff; background: rgba(255,255,255,.12); }
   body { background: #fff; color: #000; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ============================================================
+   18. BEFORE / AFTER COMPARISON
+   The control is a real range input laid transparently over the
+   image; the visible handle is decorative (pointer-events: none).
+   clip-path is physical, so the input is forced dir="ltr" in the
+   markup and the whole widget behaves identically in RTL.
+   ============================================================ */
+.beforeafter { background: var(--bg); }
+
+.ba-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--sp-4);
+}
+
+.ba { margin: 0; }
+
+.ba-stage {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface-3);
+  touch-action: pan-y;          /* vertical page scroll still works over the widget */
+}
+
+.ba-layer { position: absolute; inset: 0; }
+.ba-layer img { width: 100%; height: 100%; object-fit: cover; }
+
+/* BEFORE is clipped from the right edge inward as --pos grows */
+.ba-before { clip-path: inset(0 calc(100% - var(--pos, 50%)) 0 0); }
+
+.ba-badge {
+  position: absolute;
+  inset-block-start: .75rem;
+  padding: .25rem .75rem;
+  border-radius: var(--r-pill);
+  background: rgba(6, 42, 51, .82);
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 600;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.ba-badge-before { left: .75rem; }
+.ba-badge-after { right: .75rem; }
+
+.ba-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  z-index: 3;
+}
+.ba-range::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 100%; }
+.ba-range::-moz-range-thumb { width: 44px; height: 100%; border: 0; opacity: 0; }
+
+.ba-handle {
+  position: absolute;
+  inset-block: 0;
+  left: var(--pos, 50%);
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.ba-line {
+  position: absolute;
+  inset-block: 0;
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(6, 42, 51, .25);
+}
+.ba-grip {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  color: var(--teal-800);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--t-fast), transform var(--t-fast);
+}
+.ba-range:focus-visible ~ .ba-handle .ba-grip { box-shadow: var(--focus); }
+.ba-stage:hover .ba-grip { transform: scale(1.06); }
+
+/* Shown until real before/after photos are supplied */
+.ba-layer.is-placeholder {
+  background-color: var(--teal-900);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, .10) 1px, transparent 1px),
+    linear-gradient(to right, rgba(255, 255, 255, .10) 1px, transparent 1px);
+  background-size: 60px 60px, 60px 60px;
+}
+.ba-layer.is-placeholder img { display: none; }
+.ba-after.is-placeholder { background-color: var(--teal-700); }
+
+.ba-caption { padding-block-start: var(--sp-2); }
+.ba-caption h3 { font-size: 1.0625rem; margin-block-end: .2rem; }
+.ba-caption p { font-size: .9375rem; color: var(--text-muted); }
+
+/* ============================================================
+   19. FAQ - native <details>, no JavaScript
+   ============================================================ */
+.faq { background: var(--bg-alt); }
+.faq-list { display: grid; gap: .625rem; max-width: 820px; }
+
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.faq-item[open] { border-color: var(--teal-300); box-shadow: var(--shadow-sm); }
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  min-height: 56px;
+  padding: var(--sp-2) var(--sp-3);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary:hover { color: var(--brand); }
+.faq-item summary:focus-visible { box-shadow: var(--focus); border-radius: var(--r-md); }
+
+.faq-chevron { color: var(--brand); transition: transform var(--t-base); }
+.faq-item[open] .faq-chevron { transform: rotate(180deg); }
+
+.faq-answer {
+  padding: 0 var(--sp-3) var(--sp-3);
+  color: var(--text-muted);
+  font-size: .9375rem;
+}
+
+/* ============================================================
+   20. PROJECT CARDS AS LINKS + DETAIL PAGE
+   ============================================================ */
+.project-link { display: flex; flex-direction: column; height: 100%; color: inherit; }
+.project-link:focus-visible { box-shadow: var(--focus); border-radius: var(--r-lg); }
+
+.project-more {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  margin-block-start: .5rem;
+  color: var(--brand);
+  font-size: .875rem;
+  font-weight: 600;
+  transition: gap var(--t-fast);
+}
+.project:hover .project-more { gap: .625rem; }
+.project-more .ico { width: 16px; height: 16px; }
+
+.project-page { padding-block-start: var(--header-h); }
+
+.pp-head {
+  background: var(--bg-dark);
+  color: #fff;
+  padding-block: var(--sp-8) var(--sp-6);
+}
+.pp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 44px;
+  margin-block-end: var(--sp-2);
+  color: var(--teal-300);
+  font-size: .875rem;
+  font-weight: 600;
+}
+.pp-back:hover { color: #fff; }
+/* The back arrow points against the reading direction */
+.pp-back-ico { transform: scaleX(-1); }
+[dir="rtl"] .pp-back-ico { transform: none; }
+
+.pp-head .tag { background: rgba(255, 255, 255, .14); color: var(--teal-200); }
+.pp-head h1 {
+  font-size: clamp(1.875rem, 5vw, 3.25rem);
+  font-weight: 700;
+  margin-block: .5rem;
+}
+.pp-lead { color: rgba(255, 255, 255, .82); max-width: 60ch; font-size: 1.0625rem; }
+
+.pp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  margin-block-start: var(--sp-4);
+  padding-block-start: var(--sp-3);
+  border-block-start: 1px solid rgba(255, 255, 255, .18);
+}
+.pp-meta dt { font-size: .8125rem; color: rgba(255, 255, 255, .62); margin-block-end: .15rem; }
+.pp-meta dd { font-weight: 600; }
+
+.pp-body { padding-block: var(--sp-6); display: grid; gap: var(--sp-6); }
+
+.pp-media {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  aspect-ratio: 4 / 3;
+  background: var(--surface-3);
+}
+.pp-media img { width: 100%; height: 100%; object-fit: cover; }
+.pp-media.is-placeholder {
+  background-color: var(--teal-900);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, .10) 1px, transparent 1px),
+    linear-gradient(to right, rgba(255, 255, 255, .10) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, .04) 1px, transparent 1px),
+    linear-gradient(to right, rgba(255, 255, 255, .04) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
+}
+.pp-media.is-placeholder img { display: none; }
+
+.pp-scope h2, .pp-gallery h2 { font-size: 1.375rem; margin-block-end: var(--sp-2); }
+.pp-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-2);
+}
+.pp-gallery-grid .project-media { border: 1px solid var(--line); border-radius: var(--r-md); }
+
+.pp-cta {
+  background: var(--bg-alt);
+  padding-block: var(--sp-8);
+  text-align: center;
+}
+.pp-cta h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); margin-block-end: .5rem; }
+.pp-cta p { color: var(--text-muted); margin-block-end: var(--sp-3); }
+
+.pp-more-h { font-size: 1.5rem; margin-block-end: var(--sp-3); }
+
+/* ============================================================
+   21. DEPTH - perspective without WebGL
+   A fixed rotateX plus lift reads as physical depth at zero
+   runtime cost: no cursor tracking, no canvas, no library.
+   Hover-capable pointers only, so phones are unaffected.
+   ============================================================ */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .card, .project {
+    transform: perspective(1200px) translateZ(0);
+  }
+  .card:hover {
+    transform: perspective(1200px) rotateX(2.5deg) translateY(-6px) scale(1.012);
+    box-shadow: var(--shadow-lg);
+  }
+  .project:hover {
+    transform: perspective(1200px) rotateX(1.8deg) translateY(-6px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+/* Hero image drifts slower than the page. --parallax is set from the
+   existing scroll handler and stays 0 under reduced motion. Transform
+   only, so this composites on the GPU and never triggers layout. */
+.hero-media {
+  will-change: transform;
+  transform: translate3d(0, var(--parallax, 0px), 0) scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-media { transform: none; }
+  .card:hover, .project:hover { transform: none; }
+  .faq-chevron { transition: none; }
+}
+
+@media (max-width: 640px) {
+  .ba-grid { gap: var(--sp-3); }
+  .pp-meta { gap: var(--sp-3); }
+  .pp-body { padding-block: var(--sp-4); gap: var(--sp-4); }
+}

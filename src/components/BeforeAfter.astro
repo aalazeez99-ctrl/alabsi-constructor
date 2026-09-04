@@ -1,0 +1,71 @@
+---
+/**
+ * Drag-to-reveal before/after comparison.
+ *
+ * The control is a real <input type="range">, which means keyboard
+ * support, screen-reader semantics and touch dragging all come from the
+ * platform rather than from hand-rolled pointer maths. The visible
+ * handle is decorative; the range input sits transparently on top of it.
+ */
+const { t } = Astro.props;
+const ba = t.beforeAfter;
+---
+<section class="section beforeafter" id="before-after" aria-labelledby="ba-h">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">{ba.kicker}</p>
+      <h2 id="ba-h">{ba.heading}</h2>
+      <p class="section-sub">{ba.sub}</p>
+    </header>
+
+    <div class="ba-grid">
+      {ba.items.map((item, i) => (
+        <figure class="ba reveal" data-delay={i || undefined}>
+          <div class="ba-stage" style="--pos:50%">
+
+            {/* AFTER sits underneath and is revealed as the handle moves */}
+            <div class="ba-layer ba-after">
+              <img src={item.after} alt="" loading="lazy" decoding="async" width="1200" height="800" />
+              <span class="ba-badge ba-badge-after">{ba.afterLabel}</span>
+            </div>
+
+            {/* BEFORE is clipped from the inline-end side */}
+            <div class="ba-layer ba-before">
+              <img src={item.before} alt="" loading="lazy" decoding="async" width="1200" height="800" />
+              <span class="ba-badge ba-badge-before">{ba.beforeLabel}</span>
+            </div>
+
+            {/* The input precedes the handle so `:focus-visible ~ .ba-handle`
+                can style the grip on keyboard focus. dir="ltr" is deliberate:
+                the clip-path below is physical, so the slider must stay
+                physically left-to-right even on the Arabic page. */}
+            <input
+              class="ba-range"
+              type="range"
+              min="0"
+              max="100"
+              value="50"
+              step="1"
+              dir="ltr"
+              aria-label={`${item.title} — ${ba.sliderLabel}`}
+            />
+
+            <div class="ba-handle" aria-hidden="true">
+              <span class="ba-line"></span>
+              <span class="ba-grip">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 6L4 12l5 6M15 6l5 6-5 6" />
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <figcaption class="ba-caption">
+            <h3>{item.title}</h3>
+            <p>{item.caption}</p>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>

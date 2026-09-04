@@ -96,9 +96,14 @@ toTop?.addEventListener('click', () => {
 /* ------------------------------------------------------------------
    3. SCROLL SPY
    ------------------------------------------------------------------ */
+/* On sub-pages the nav points at "/#services" rather than "#services".
+   That is not a valid selector, so only same-page anchors are spied on —
+   passing the cross-page form to querySelector would throw. */
 const navLinks = $$('.nav-link');
 const sections = navLinks
-  .map((l) => document.querySelector(l.getAttribute('href')))
+  .map((l) => l.getAttribute('href'))
+  .filter((href) => href?.startsWith('#') && href.length > 1)
+  .map((href) => document.querySelector(href))
   .filter(Boolean);
 
 if (sections.length) {
@@ -330,7 +335,9 @@ document.addEventListener('click', (e) => {
   if (!link) return;
 
   const href = link.getAttribute('href');
-  if (!href || href === '#') return;
+  // Bare "#" has no target; anything not starting with "#" is a real
+  // navigation (e.g. "/#services" from a project page) — let it through.
+  if (!href || href === '#' || !href.startsWith('#')) return;
 
   const target = document.querySelector(href);
   if (!target) return;
@@ -346,3 +353,68 @@ document.addEventListener('click', (e) => {
   target.setAttribute('tabindex', '-1');
   target.focus({ preventScroll: true });
 });
+
+/* ------------------------------------------------------------------
+   10. BEFORE / AFTER SLIDER
+   The <input type="range"> already gives us dragging, touch and full
+   keyboard control for free. All this does is mirror its value into a
+   custom property that drives the clip-path and the handle position.
+   ------------------------------------------------------------------ */
+for (const stage of $$('.ba-stage')) {
+  const range = stage.querySelector('.ba-range');
+  if (!range) continue;
+
+  const sync = () => stage.style.setProperty('--pos', `${range.value}%`);
+  range.addEventListener('input', sync);
+  sync();
+}
+
+/* Before/after photos fall back to the blueprint pattern too, so a
+   missing pair reads as "not supplied yet" rather than as broken. */
+for (const img of $$('.ba-layer img')) {
+  const fallback = () => img.parentElement?.classList.add('is-placeholder');
+  if (img.complete && img.naturalWidth === 0) fallback();
+  img.addEventListener('error', fallback);
+}
+
+/* Project detail hero image uses the same convention. */
+for (const img of $$('.pp-media img')) {
+  const fallback = () => img.parentElement?.classList.add('is-placeholder');
+  if (img.complete && img.naturalWidth === 0) fallback();
+  img.addEventListener('error', fallback);
+}
+
+/* ------------------------------------------------------------------
+   11. HERO PARALLAX
+   Depth without WebGL: the hero image drifts at a fraction of the
+   scroll rate. Transform only, capped, and skipped entirely under
+   reduced motion — guideline: parallax must never be forced.
+   ------------------------------------------------------------------ */
+const heroMedia = $('.hero-media');
+
+if (heroMedia && !reduceMotion.matches) {
+  const MAX_DRIFT = 90;      // px, so the image never pulls away from its frame
+  const RATE = 0.25;
+  let parallaxTicking = false;
+
+  const applyParallax = () => {
+    const drift = Math.min(window.scrollY * RATE, MAX_DRIFT);
+    heroMedia.style.setProperty('--parallax', `${drift}px`);
+    parallaxTicking = false;
+  };
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      // Stop doing any work once the hero is off screen.
+      if (window.scrollY > window.innerHeight) return;
+      if (!parallaxTicking) {
+        parallaxTicking = true;
+        requestAnimationFrame(applyParallax);
+      }
+    },
+    { passive: true }
+  );
+
+  applyParallax();
+}

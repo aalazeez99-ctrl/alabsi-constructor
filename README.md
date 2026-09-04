@@ -29,19 +29,22 @@ public/                served as-is, never processed
   logo.png             the company logo - DO NOT modify or replace
   robots.txt
   images/
-    og.png             social-share preview card
     project-1..4.jpg   <- add real project photos here (see below)
+    ba-*-before/after  <- before/after pairs (see below)
 
 src/
   assets/              images the build optimises into WebP
     hero.png           hero background
     about.png          about-section photo
+    og.png             social preview, re-encoded to JPEG at build
   components/          one file per section of the page
   i18n/ui.js           ALL site copy, Arabic + English
   layouts/Base.astro   <head>, header, footer, structured data
   pages/
-    index.astro        ->  /       (Arabic, default)
-    en/index.astro     ->  /en/    (English)
+    index.astro                ->  /
+    en/index.astro             ->  /en/
+    projects/[slug].astro      ->  /projects/<slug>/
+    en/projects/[slug].astro   ->  /en/projects/<slug>/
   scripts/site.js      client-side behaviour
   styles/global.css    design tokens + all styling
 
@@ -121,7 +124,7 @@ Targeted at **Kuwait**, in both Arabic and English.
 
 What is in place:
 
-- **Two indexable pages** — `/` (Arabic) and `/en/` (English), each with its own
+- **Ten indexable pages** — `/` and `/en/` plus a page per project in each language, each with its own
   `<title>`, description, keywords and canonical URL, cross-linked with `hreflang`
   (`ar`, `en`, `x-default`). A JavaScript-only language toggle can never do this;
   search engines only ever see one version.
@@ -135,8 +138,8 @@ What is in place:
   Google Maps / local-pack eligibility — the keywords tag itself is ignored by Google
   and is included mainly for regional and internal search tools.
 - **Geo meta tags** (`geo.region KW-KU`, `geo.position`, `ICBM`).
-- **Open Graph + Twitter cards** using `public/images/og.png`, so shared links render a
-  branded preview.
+- **Open Graph + Twitter cards**, with the preview card re-encoded to a compressed
+  JPEG at build so WhatsApp will actually render it (see below).
 - `sitemap-index.xml` generated at build, with `robots.txt` pointing at it.
 - Semantic headings (one `h1` per page), descriptive `alt` text, and real
   server-rendered text — no content hidden behind JavaScript.
@@ -152,3 +155,83 @@ What is in place:
 4. Submit the sitemap in Google Search Console, and claim the Google Business Profile
    for the Shuwaikh address — for a local contractor that is the single highest-impact
    step, more than anything on the page itself.
+
+---
+
+## Sections added after the first pass
+
+### Before / after slider
+
+Drag-to-reveal comparison, in `src/components/BeforeAfter.astro`. The control is a
+real `<input type="range">` laid transparently over the image, so dragging, touch and
+full keyboard control come from the browser rather than hand-written pointer code.
+
+**It currently shows blueprint placeholders** because no photos exist. Add pairs to
+`public/images/`:
+
+```
+ba-1-before.jpg   ba-1-after.jpg
+ba-2-before.jpg   ba-2-after.jpg
+```
+
+Shoot both from the same position — the effect only works when the two frames line up.
+Titles and captions are in `src/i18n/ui.js` under `beforeAfter.items`, and **the two
+placeholder captions there are examples: replace them with real jobs.**
+
+### Project detail pages
+
+Each project now has its own page: `/projects/<slug>/` and `/en/projects/<slug>/`.
+That takes the site from 2 indexable pages to 10, each targeting a real search term.
+
+Optional fields per project in `src/i18n/ui.js` are **empty on purpose** — each block
+is guarded, so an empty field renders nothing rather than an empty label. Fill them in
+as you confirm the details:
+
+```js
+location: '',      // e.g. 'الشويخ، الكويت'
+year: '',          // e.g. '2024'
+scope: [],         // e.g. ['أعمال إنشائية', 'تشطيبات داخلية']
+gallery: [],       // e.g. ['/images/villa-1.jpg', '/images/villa-2.jpg']
+```
+
+Slugs must stay identical between the Arabic and English lists — that pairing is what
+links each page to its translation.
+
+### FAQ
+
+`src/components/Faq.astro`, built on native `<details>` so it works with JavaScript
+off. It emits `FAQPage` structured data, which makes Google eligible to show these
+questions directly in the results.
+
+**Verify every answer before going live.** They were written only from what the site
+already says (the process and services sections) and deliberately avoid any claim about
+pricing, warranty or turnaround that had not already been made. If something is wrong
+for your business, fix the wording in `src/i18n/ui.js` under `faq.items`.
+
+### Depth, without WebGL
+
+A Three.js scene was considered and rejected. The design data rates that style
+`mobile-friendly: not-recommended`, `cost:high`, `risk:high` — the wrong trade for a
+site whose job is getting phone calls from people on mobile data.
+
+Instead: a fixed `rotateX` lift on cards and a hero image that drifts at a quarter of
+scroll speed. Transform-only, GPU-composited, hover-capable pointers only, and both
+switch off under `prefers-reduced-motion`. The genuinely 3D content on this site should
+be your own renders — you already sell them as a service.
+
+---
+
+## Social preview (og:image)
+
+If a shared link shows no image, there are two independent causes:
+
+1. **The domain in `astro.config.mjs` must be the real one.** `og:image` is an absolute
+   URL; if it points at a domain that does not resolve, the scraper fetches nothing.
+2. **File size.** WhatsApp silently drops previews above roughly 300 KB. The source
+   card is a 1.7 MB PNG, so it is never served directly — `Base.astro` runs it through
+   sharp into a ~1200px JPEG at build time. This only happens when you actually run
+   `npm run build`.
+
+After changing the domain, re-scrape the URL in
+[Facebook's Sharing Debugger](https://developers.facebook.com/tools/debug/) — WhatsApp
+and Facebook cache previews aggressively and will keep showing the old (missing) one.

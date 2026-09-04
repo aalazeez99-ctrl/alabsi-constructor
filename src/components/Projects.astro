@@ -1,5 +1,8 @@
 ---
-const { t } = Astro.props;
+import Icon from './Icon.astro';
+import { projectPath } from '../i18n/ui.js';
+
+const { t, lang = 'ar' } = Astro.props;
 ---
 <section class="section projects" id="projects" aria-labelledby="projects-h">
   <div class="container">
@@ -29,21 +32,27 @@ const { t } = Astro.props;
     <div class="project-grid" id="projectGrid">
       {t.projects.items.map((p, i) => (
         <article class="project reveal" data-delay={i || undefined} data-sector={p.sector}>
-          <div class="project-media">
-            <img
-              src={p.image}
-              alt={`${p.title} — ${p.text}`}
-              loading="lazy"
-              decoding="async"
-              width="800"
-              height="600"
-            />
-          </div>
-          <div class="project-body">
-            <span class="tag">{p.tag}</span>
-            <h3>{p.title}</h3>
-            <p>{p.text}</p>
-          </div>
+          <a class="project-link" href={projectPath(lang, p.slug)}>
+            <div class="project-media">
+              <img
+                src={p.image}
+                alt={`${p.title} — ${p.text}`}
+                loading="lazy"
+                decoding="async"
+                width="800"
+                height="600"
+              />
+            </div>
+            <div class="project-body">
+              <span class="tag">{p.tag}</span>
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+              <span class="project-more">
+                {t.projects.viewProject}
+                <Icon name="arrow" dir />
+              </span>
+            </div>
+          </a>
         </article>
       ))}
     </div>

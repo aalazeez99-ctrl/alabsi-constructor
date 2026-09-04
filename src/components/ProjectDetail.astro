@@ -1,0 +1,118 @@
+---
+import Icon from './Icon.astro';
+import { projectPath } from '../i18n/ui.js';
+
+/**
+ * Body of a single project page. Optional fields (location, year, scope,
+ * gallery) are empty in ui.js by default and each block is guarded, so a
+ * project with no extra data simply renders fewer sections rather than
+ * showing empty labels or invented detail.
+ */
+const { t, lang, project } = Astro.props;
+const d = t.projects.detail;
+
+const others = t.projects.items.filter((p) => p.slug !== project.slug).slice(0, 3);
+---
+<article class="project-page">
+
+  <header class="pp-head">
+    <div class="container">
+      <a class="pp-back" href={`${lang === 'en' ? '/en/' : '/'}#projects`}>
+        <Icon name="arrow" dir class="pp-back-ico" />
+        <span>{d.back}</span>
+      </a>
+
+      <span class="tag">{project.tag}</span>
+      <h1>{project.title}</h1>
+      <p class="pp-lead">{project.text}</p>
+
+      <dl class="pp-meta">
+        <div>
+          <dt>{d.sectorLabel}</dt>
+          <dd>{project.tag}</dd>
+        </div>
+        {project.location && (
+          <div>
+            <dt>{d.locationLabel}</dt>
+            <dd>{project.location}</dd>
+          </div>
+        )}
+        {project.year && (
+          <div>
+            <dt>{d.yearLabel}</dt>
+            <dd>{project.year}</dd>
+          </div>
+        )}
+      </dl>
+    </div>
+  </header>
+
+  <div class="container pp-body">
+    <div class="pp-media">
+      <img src={project.image} alt={project.title} width="1200" height="900" decoding="async" />
+    </div>
+
+    {project.scope?.length > 0 && (
+      <section class="pp-scope" aria-labelledby="pp-scope-h">
+        <h2 id="pp-scope-h">{d.scopeLabel}</h2>
+        <ul class="checklist">
+          {project.scope.map((s) => (
+            <li><Icon name="check" /><span>{s}</span></li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {project.gallery?.length > 0 && (
+      <section class="pp-gallery" aria-labelledby="pp-gallery-h">
+        <h2 id="pp-gallery-h">{d.galleryLabel}</h2>
+        <div class="pp-gallery-grid">
+          {project.gallery.map((src, i) => (
+            <div class="project-media">
+              <img
+                src={src}
+                alt={`${project.title} — ${i + 1}`}
+                loading="lazy"
+                decoding="async"
+                width="800"
+                height="600"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+
+  <section class="pp-cta">
+    <div class="container">
+      <h2>{d.ctaHeading}</h2>
+      <p>{d.ctaText}</p>
+      <a href={`${lang === 'en' ? '/en/' : '/'}#contact`} class="btn btn-primary btn-lg">
+        <span>{d.ctaButton}</span>
+        <Icon name="arrow" dir />
+      </a>
+    </div>
+  </section>
+
+  <section class="section pp-more" aria-labelledby="pp-more-h">
+    <div class="container">
+      <h2 id="pp-more-h" class="pp-more-h">{d.moreHeading}</h2>
+      <div class="project-grid">
+        {others.map((p) => (
+          <a class="project" href={projectPath(lang, p.slug)}>
+            <div class="project-media">
+              <img src={p.image} alt="" loading="lazy" decoding="async" width="800" height="600" />
+            </div>
+            <div class="project-body">
+              <span class="tag">{p.tag}</span>
+              <h3>{p.title}</h3>
+              <p>{p.text}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</article>

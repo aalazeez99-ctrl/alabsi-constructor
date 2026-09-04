@@ -2,14 +2,14 @@
 import Icon from './Icon.astro';
 import { LOCALES, ui } from '../i18n/ui.js';
 
-const { lang, t, altHref } = Astro.props;
+const { lang, t, altHref, navPrefix = '' } = Astro.props;
 ---
 <header class="site-header" id="header">
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
   <div class="container header-inner">
 
-    <a class="brand" href="#home" aria-label={t.brand.homeAria}>
+    <a class="brand" href={`${navPrefix}#home`} aria-label={t.brand.homeAria}>
       {/* alt="" on purpose: the link already carries aria-label, and the
           company name is in the adjacent text. Alt text here would make
           a screen reader announce the brand three times. */}
@@ -25,7 +25,7 @@ const { lang, t, altHref } = Astro.props;
         {t.nav.links.map((link, i) => (
           <li>
             <a
-              href={link.href}
+              href={`${navPrefix}${link.href}`}
               class:list={['nav-link', i === 0 && 'is-active']}
               aria-current={i === 0 ? 'true' : undefined}
             >{link.label}</a>
@@ -49,7 +49,7 @@ const { lang, t, altHref } = Astro.props;
           ))}
         </div>
 
-        <a href="#contact" class="btn btn-primary btn-sm">
+        <a href={`${navPrefix}#contact`} class="btn btn-primary btn-sm">
           <Icon name="phone" />
           <span>{t.nav.contact}</span>
         </a>

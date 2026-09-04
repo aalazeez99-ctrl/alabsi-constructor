@@ -1,0 +1,46 @@
+---
+import Icon from './Icon.astro';
+
+/**
+ * Accordion built on native <details>/<summary> — keyboard support,
+ * screen-reader semantics and open/close state all come free from the
+ * platform, and it still works with JavaScript disabled.
+ *
+ * Also emits FAQPage structured data, which is what makes Google
+ * eligible to show these questions directly in the results.
+ */
+const { t } = Astro.props;
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: t.faq.items.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+---
+<section class="section faq" id="faq" aria-labelledby="faq-h">
+  <div class="container">
+    <header class="section-head reveal">
+      <p class="kicker">{t.faq.kicker}</p>
+      <h2 id="faq-h">{t.faq.heading}</h2>
+      <p class="section-sub">{t.faq.sub}</p>
+    </header>
+
+    <div class="faq-list">
+      {t.faq.items.map((item, i) => (
+        <details class="faq-item reveal" data-delay={i < 4 ? i || undefined : undefined}>
+          <summary>
+            <span>{item.q}</span>
+            <Icon name="chevron" class="faq-chevron" />
+          </summary>
+          <div class="faq-answer"><p>{item.a}</p></div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script type="application/ld+json" set:html={JSON.stringify(faqLd)} />

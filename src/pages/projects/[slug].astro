@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProjectDetail from '../../components/ProjectDetail.astro';
+import { useTranslations, projectPath } from '../../i18n/ui.js';
+
+const lang = 'ar';
+
+export function getStaticPaths() {
+  const t = useTranslations('ar');
+  return t.projects.items.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const t = useTranslations(lang);
+---
+<Base
+  lang={lang}
+  title={`${project.title} — ${t.brand.legalName}`}
+  description={project.text}
+  altHref={projectPath('en', project.slug)}
+>
+  <ProjectDetail t={t} lang={lang} project={project} />
+</Base>
